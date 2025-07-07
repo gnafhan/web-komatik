@@ -163,6 +163,9 @@ This project uses two main branches:
 > **All feature/fix branches must be merged into `dev`, _not_ `main`. Only maintainers should merge `dev` into `main` for production releases.**
 
 #### Step-by-Step Workflow for Contributors
+<picture><img alt="Sentry" src=".github/images/git_workflow.png">
+        </picture>
+
 1. **Sync your local repository**
    - Make sure you have the latest `dev` branch:
      ```sh
