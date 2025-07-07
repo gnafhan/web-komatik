@@ -1,0 +1,288 @@
+# web-komatik Project Rules & Conventions
+
+## General Expertise
+- JavaScript, React, Node.js, Next.js App Router, Zustand, Shadcn UI, Radix UI, Tailwind, Stylus.
+
+## Code Style & Structure
+- Concise, technical JavaScript per Standard.js rules.
+- Functional, declarative patterns; avoid classes.
+- Prefer iteration, modularization; avoid duplication.
+- Descriptive variable names with auxiliary verbs (e.g., `isLoading`, `hasError`).
+- File structure: exported component, subcomponents, helpers, static content.
+
+## Standard.js Rules
+- 2 space indentation.
+- Single quotes for strings (except to avoid escaping).
+- No semicolons (unless required to disambiguate).
+- No unused variables.
+- Space after keywords.
+- Space before function declaration parentheses.
+- Always use `===` instead of `==`.
+- Infix operators must be spaced.
+- Commas: space after.
+- `else` on same line as closing curly brace.
+- Multi-line `if`: use curly braces.
+- Always handle `err` function parameter.
+- CamelCase for variables/functions.
+- PascalCase for constructors/React components.
+
+## Naming Conventions
+- Lowercase with dashes for directories (e.g., `components/auth-wizard`).
+- Favor named exports for components.
+
+## React Best Practices
+- Functional components with prop-types for type checking.
+- Use `function` keyword for component definitions.
+- Correct hook usage (`useState`, `useEffect`, `useContext`, `useReducer`, `useMemo`, `useCallback`).
+- Follow Rules of Hooks (top-level, only in React functions).
+- Extract reusable logic into custom hooks.
+- Use `React.memo()` for memoization when appropriate.
+- Use `useCallback` for memoizing functions passed as props.
+- Use `useMemo` for expensive computations.
+- Avoid inline function definitions in render.
+- Prefer composition over inheritance.
+- Use `children` and render props for flexibility.
+- Use `React.lazy()` and `Suspense` for code splitting.
+- Use refs sparingly (mainly for DOM access).
+- Prefer controlled components.
+- Implement error boundaries.
+- Use cleanup in `useEffect` to prevent leaks.
+- Use short-circuit/ternary for conditional rendering.
+
+## State Management
+- Use Zustand for global state.
+- Lift state up for sharing.
+- Use context for intermediate state sharing.
+
+## UI & Styling
+- Use Shadcn UI and Radix UI for components.
+- Responsive design with Tailwind (mobile-first).
+- Stylus as CSS Modules for component styles:
+  - `.module.styl` per component needing custom styles.
+  - CamelCase for class names in Stylus.
+  - Use Stylus features: nesting, variables, mixins.
+- Consistent CSS class naming (e.g., BEM) in Stylus modules.
+- Tailwind for utility classes/rapid prototyping.
+- Combine Tailwind and Stylus modules:
+  - Tailwind for common utilities/layout.
+  - Stylus for complex, component-specific styles.
+  - Never use `@apply` directive.
+
+### File Structure for Styling
+- Place Stylus module files next to component files.
+- Example:
+  ```
+  components/
+    Button/
+      Button.js
+      Button.module.styl
+    Card/
+      Card.js
+      Card.module.styl
+  ```
+
+## Stylus Best Practices
+- Use variables for colors, fonts, repeated values.
+- Create mixins for common patterns.
+- Use parent selector (`&`) for nesting/pseudo-classes.
+- Keep specificity low; avoid deep nesting.
+
+## React & Stylus Integration
+- Import Stylus modules in React:
+  ```js
+  import styles from './ComponentName.module.styl'
+  <div className={styles.containerClass}>
+  ```
+
+## Performance Optimization
+- Minimize `use client`, `useEffect`, `useState`; favor React Server Components (RSC).
+- Wrap client components in `Suspense` with fallback.
+- Use dynamic loading for non-critical components.
+- Optimize images: use WebP, size data, lazy loading.
+- Route-based code splitting in Next.js.
+- Minimize global styles; prefer modular, scoped styles.
+- Use PurgeCSS with Tailwind in production.
+
+## Forms & Validation
+- Use controlled components for form inputs.
+- Implement client/server-side validation.
+- Use `react-hook-form` for complex forms.
+- Use Zod or Joi for schema validation.
+
+## Error Handling & Validation
+- Prioritize error handling/edge cases.
+- Handle errors/edge cases at function start.
+- Use early returns for errors (avoid deep nesting).
+- Place happy path last for readability.
+- Avoid unnecessary `else`; use if-return pattern.
+- Use guard clauses for preconditions/invalid states.
+- Implement error logging and user-friendly messages.
+- Model expected errors as return values in Server Actions.
+
+## Accessibility (a11y)
+- Use semantic HTML.
+- Implement proper ARIA attributes.
+- Ensure keyboard navigation support.
+
+## Security
+- Sanitize user inputs to prevent XSS.
+- Use `dangerouslySetInnerHTML` only with sanitized content.
+
+## Database
+- Use firebase.server.ts on server component or server action
+- Use firebase.client.ts on client component
+
+## Key Conventions
+- Use `nuqs` for URL search parameter state.
+- Optimize Web Vitals (LCP, CLS, FID).
+- Limit `use client`:
+  - Favor server components/SSR.
+  - Use only for Web API access in small components.
+  - Avoid for data fetching/state management.
+- Balance Tailwind and Stylus modules:
+  - Tailwind for rapid dev/spacing/sizing.
+  - Stylus for complex, unique styles.
+
+## Next.js
+- Follow official docs for Data Fetching, Rendering, Routing.
+
+---
+
+These examples should be used as guidance when configuring Sentry functionality within a project.
+
+# Exception Catching
+
+Use `Sentry.captureException(error)` to capture an exception and log the error in Sentry.
+Use this in try catch blocks or areas where exceptions are expected
+
+# Tracing Examples
+
+Spans should be created for meaningful actions within an applications like button clicks, API calls, and function calls
+Use the `Sentry.startSpan` function to create a span
+Child spans can exist within a parent span
+
+## Custom Span instrumentation in component actions
+
+The `name` and `op` properties should be meaninful for the activities in the call.
+Attach attributes based on relevant information and metrics from the request
+
+```javascript
+function TestComponent() {
+  const handleTestButtonClick = () => {
+    // Create a transaction/span to measure performance
+    Sentry.startSpan(
+      {
+        op: "ui.click",
+        name: "Test Button Click",
+      },
+      (span) => {
+        const value = "some config";
+        const metric = "some metric";
+
+        // Metrics can be added to the span
+        span.setAttribute("config", value);
+        span.setAttribute("metric", metric);
+
+        doSomething();
+      },
+    );
+  };
+
+  return (
+    <button type="button" onClick={handleTestButtonClick}>
+      Test Sentry
+    </button>
+  );
+}
+```
+
+## Custom span instrumentation in API calls
+
+The `name` and `op` properties should be meaninful for the activities in the call.
+Attach attributes based on relevant information and metrics from the request
+
+```javascript
+async function fetchUserData(userId) {
+  return Sentry.startSpan(
+    {
+      op: "http.client",
+      name: `GET /api/users/${userId}`,
+    },
+    async () => {
+      const response = await fetch(`/api/users/${userId}`);
+      const data = await response.json();
+      return data;
+    },
+  );
+}
+```
+
+# Logs
+
+Where logs are used, ensure Sentry is imported using `import * as Sentry from "@sentry/nextjs"`
+Enable logging in Sentry using `Sentry.init({ _experiments: { enableLogs: true } })`
+Reference the logger using `const { logger } = Sentry`
+Sentry offers a consoleLoggingIntegration that can be used to log specific console error types automatically without instrumenting the individual logger calls
+
+## Configuration
+
+In NextJS the client side Sentry initialization is in `instrumentation-client.ts`, the server initialization is in `sentry.edge.config.ts` and the edge initialization is in `sentry.server.config.ts`
+Initialization does not need to be repeated in other files, it only needs to happen the files mentioned above. You should use `import * as Sentry from "@sentry/nextjs"` to reference Sentry functionality
+
+### Baseline
+
+```javascript
+import * as Sentry from "@sentry/nextjs";
+
+Sentry.init({
+  dsn: "https://0bc4814a1fd2e41e866e5058adc9c09d@o4509621033828352.ingest.de.sentry.io/4509621039464528",
+
+  _experiments: {
+    enableLogs: true,
+  },
+});
+```
+
+### Logger Integration
+
+```javascript
+Sentry.init({
+  dsn: "https://0bc4814a1fd2e41e866e5058adc9c09d@o4509621033828352.ingest.de.sentry.io/4509621039464528",
+  integrations: [
+    // send console.log, console.error, and console.warn calls as logs to Sentry
+    Sentry.consoleLoggingIntegration({ levels: ["log", "error", "warn"] }),
+  ],
+});
+```
+
+## Logger Examples
+
+`logger.fmt` is a template literal function that should be used to bring variables into the structured logs.
+
+```javascript
+logger.trace("Starting database connection", { database: "users" });
+logger.debug(logger.fmt`Cache miss for user: ${userId}`);
+logger.info("Updated profile", { profileId: 345 });
+logger.warn("Rate limit reached for endpoint", {
+  endpoint: "/api/results/",
+  isEnterprise: false,
+});
+logger.error("Failed to process payment", {
+  orderId: "order_123",
+  amount: 99.99,
+});
+logger.fatal("Database connection pool exhausted", {
+  database: "users",
+  activeConnections: 100,
+});
+```
+
+# Cursor Rule Enhancements
+- This rule is always active and applies to all files in the project.
+- Use as a reference for code reviews, new code, and refactoring.
+- When in doubt, prefer the most restrictive or explicit convention.
+- Update this rule as project conventions evolve.
+description:
+globs:
+alwaysApply: true
+---
