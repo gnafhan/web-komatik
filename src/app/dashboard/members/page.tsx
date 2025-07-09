@@ -13,11 +13,11 @@ export const metadata = {
   title: 'Dashboard: Members'
 };
 
-type pageProps = {
+type PageProps = {
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
-export default function Page({ searchParams }: pageProps) {
+export default function Page({ searchParams }: PageProps) {
   const { page, name, perPage } = searchParams;
 
   return (
