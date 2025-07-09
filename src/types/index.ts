@@ -1,35 +1,21 @@
-import { Icons } from '@/components/icons';
+export type Member = {
+  id: number;
+  uid: string;
+  name: string;
+  email: string;
+  phone: string;
+  student_id: string;
+  photo_url: string;
+  bio: string;
+  created_at: string | null;
+  updated_at: string | null;
+};
 
-export interface NavItem {
+export type NavItem = {
   title: string;
   url: string;
-  disabled?: boolean;
-  external?: boolean;
-  shortcut?: [string, string];
-  icon?: keyof typeof Icons;
-  label?: string;
-  description?: string;
+  icon?: string;
   isActive?: boolean;
+  shortcut?: string[];
   items?: NavItem[];
-}
-
-export interface NavItemWithChildren extends NavItem {
-  items: NavItemWithChildren[];
-}
-
-export interface NavItemWithOptionalChildren extends NavItem {
-  items?: NavItemWithChildren[];
-}
-
-export interface FooterItem {
-  title: string;
-  items: {
-    title: string;
-    href: string;
-    external?: boolean;
-  }[];
-}
-
-export type MainNavItem = NavItemWithOptionalChildren;
-
-export type SidebarNavItem = NavItemWithChildren;
+};

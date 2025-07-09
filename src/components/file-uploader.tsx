@@ -16,6 +16,7 @@ import { useControllableState } from '@/hooks/use-controllable-state';
 import { cn, formatBytes } from '@/lib/utils';
 
 interface FileUploaderProps extends React.HTMLAttributes<HTMLDivElement> {
+  imageUrl?: string;
   /**
    * Value of the uploader.
    * @type File[]
@@ -104,6 +105,7 @@ export function FileUploader(props: FileUploaderProps) {
     multiple = false,
     disabled = false,
     className,
+    imageUrl,
     ...dropzoneProps
   } = props;
 
@@ -257,7 +259,31 @@ export function FileUploader(props: FileUploaderProps) {
             ))}
           </div>
         </ScrollArea>
-      ) : null}
+      ) : (
+        imageUrl && (
+          <div className='space-y-4'>
+            <div className='relative flex items-center space-x-4'>
+              <div className='flex flex-1 space-x-4'>
+                <Image
+                  src={imageUrl}
+                  alt='Uploaded image'
+                  width={48}
+                  height={48}
+                  loading='lazy'
+                  className='aspect-square shrink-0 rounded-md object-cover'
+                />
+                <div className='flex w-full flex-col gap-2'>
+                  <div className='space-y-px'>
+                    <p className='text-foreground/80 line-clamp-1 text-sm font-medium'>
+                      Current Image
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      )}
     </div>
   );
 }

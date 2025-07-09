@@ -1,0 +1,44 @@
+import { Member } from '@/types';
+import { notFound } from 'next/navigation';
+import MemberForm from './member-form';
+import { db } from '@/database/connection/firebase.client';
+import { doc, getDoc } from 'firebase/firestore';
+
+type TMemberViewPageProps = {
+  memberId: string;
+};
+
+export default async function MemberViewPage({
+  memberId
+}: TMemberViewPageProps) {
+  let member: Member | null = null;
+  let pageTitle = 'Create New Member';
+
+  if (memberId !== 'new') {
+    const docRef = doc(db, 'members', memberId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      if (data) {
+        member = {
+          ...data,
+          id: data.id,
+          uid: docSnap.id,
+          created_at: data.created_at?.toDate
+            ? data.created_at.toDate()
+            : new Date(),
+          updated_at: data.updated_at?.toDate
+            ? data.updated_at.toDate()
+            : new Date()
+        } as Member;
+      }
+    }
+
+    if (!member) {
+      notFound();
+    }
+    pageTitle = `Edit Member`;
+  }
+
+  return <MemberForm initialData={member} pageTitle={pageTitle} />;
+}
