@@ -9,7 +9,7 @@ export const metadata = {
 
 type PageProps = { params: { memberId: string } };
 
-export default async function Page(props: PageProps) {
+export default function Page(props: PageProps) {
   return (
     <PageContainer scrollable>
       <div className='flex-1 space-y-4'>
