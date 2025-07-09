@@ -17,8 +17,8 @@ type pageProps = {
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
-export default async function Page({ searchParams }: pageProps) {
-  const { page, name, perPage } = await searchParams;
+export default function Page({ searchParams }: pageProps) {
+  const { page, name, perPage } = searchParams;
 
   return (
     <PageContainer scrollable={false}>
