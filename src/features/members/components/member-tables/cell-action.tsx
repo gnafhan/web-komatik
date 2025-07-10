@@ -28,7 +28,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const onConfirm = async () => {
     try {
       setLoading(true);
-      await deleteDoc(doc(db, 'members', data.uid));
+      await deleteDoc(doc(db, 'members', data.id));
       toast.success('Member deleted.');
       router.refresh();
     } catch (error) {
@@ -58,7 +58,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
           <DropdownMenuItem
-            onClick={() => router.push(`/dashboard/members/${data.uid}`)}
+            onClick={() => router.push(`/dashboard/members/${data.id}`)}
           >
             <IconEdit className='mr-2 h-4 w-4' /> Update
           </DropdownMenuItem>

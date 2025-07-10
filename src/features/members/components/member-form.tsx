@@ -124,7 +124,7 @@ export default function MemberForm({
       }
 
       if (initialData) {
-        const memberRef = doc(db, 'members', initialData.uid);
+        const memberRef = doc(db, 'members', initialData.id);
         await updateDoc(memberRef, {
           ...values,
           photo_url: photoUrl,
@@ -135,15 +135,21 @@ export default function MemberForm({
         router.refresh();
       } else {
         const membersCollection = collection(db, 'members');
-        const newMemberRef = doc(membersCollection);
-
         const querySnapshot = await getDocs(query(membersCollection));
-        const newId = querySnapshot.size + 1;
+        let highestId = 0;
+        querySnapshot.forEach((doc) => {
+          const docId = parseInt(doc.id, 10);
+          if (docId > highestId) {
+            highestId = docId;
+          }
+        });
+        const newId = (highestId + 1).toString();
+
+        const newMemberRef = doc(db, 'members', newId);
 
         await setDoc(newMemberRef, {
           ...values,
           id: newId,
-          uid: newMemberRef.id,
           photo_url: photoUrl,
           created_at: new Date(),
           updated_at: new Date()

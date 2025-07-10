@@ -20,8 +20,7 @@ async function fetchMembers({
     }
     return {
       ...data,
-      id: data.id as number,
-      uid: doc.id,
+      id: doc.id,
       created_at: data.created_at?.toDate?.().toISOString() || null,
       updated_at: data.updated_at?.toDate?.().toISOString() || null
     } as Member;

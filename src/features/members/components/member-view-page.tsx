@@ -22,14 +22,13 @@ export default async function MemberViewPage({
       if (data) {
         member = {
           ...data,
-          id: data.id,
-          uid: docSnap.id,
+          id: docSnap.id,
           created_at: data.created_at?.toDate
-            ? data.created_at.toDate()
-            : new Date(),
+            ? data.created_at.toDate().toISOString()
+            : new Date().toISOString(),
           updated_at: data.updated_at?.toDate
-            ? data.updated_at.toDate()
-            : new Date()
+            ? data.updated_at.toDate().toISOString()
+            : new Date().toISOString()
         } as Member;
       }
     }
