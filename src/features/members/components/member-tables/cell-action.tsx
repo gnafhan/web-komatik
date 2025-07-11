@@ -8,10 +8,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { db } from '@/database/connection/firebase.client';
+import { db, storage } from '@/database/connection/firebase.client';
 import { Member } from '@/types';
 import { IconEdit, IconDotsVertical, IconTrash } from '@tabler/icons-react';
 import { deleteDoc, doc } from 'firebase/firestore';
+import { deleteObject, ref } from 'firebase/storage';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -28,8 +29,14 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const onConfirm = async () => {
     try {
       setLoading(true);
+
+      if (data.photo_url) {
+        const photoRef = ref(storage, data.photo_url);
+        await deleteObject(photoRef);
+      }
+
       await deleteDoc(doc(db, 'members', data.id));
-      toast.success('Member deleted.');
+      toast.success('Member deleted successfully.');
       router.refresh();
     } catch (error) {
       toast.error('Something went wrong');
