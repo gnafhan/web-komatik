@@ -11,13 +11,27 @@ async function fetchMembers({
   limit?: number;
   search?: string;
 }) {
-  const membersRef = db.collection('members');
+  let membersRef: FirebaseFirestore.Query = db.collection('members');
+
+  if (search) {
+    const s = search.toLowerCase();
+    membersRef = membersRef
+      .where('name', '>=', s)
+      .where('name', '<=', s + '\uf8ff');
+  }
+
   const snapshot = await membersRef.get();
-  const membersData = snapshot.docs.map((doc) => {
+  const totalMembers = snapshot.size;
+
+  const paginatedQuery = membersRef
+    .orderBy('created_at', 'desc')
+    .limit(limit)
+    .offset((page - 1) * limit);
+
+  const paginatedSnapshot = await paginatedQuery.get();
+
+  const members = paginatedSnapshot.docs.map((doc) => {
     const data = doc.data();
-    if (!data) {
-      return null;
-    }
     return {
       ...data,
       id: doc.id,
@@ -26,22 +40,7 @@ async function fetchMembers({
     } as Member;
   });
 
-  let members = membersData.filter(
-    (member): member is Member => member !== null
-  );
-  if (search) {
-    const s = search.toLowerCase();
-    members = members.filter(
-      (p) =>
-        p.name.toLowerCase().includes(s) ||
-        p.email.toLowerCase().includes(s) ||
-        (p.student_id && p.student_id.toLowerCase().includes(s))
-    );
-  }
-  const totalMembers = members.length;
-  const offset = (page - 1) * limit;
-  const paginated = members.slice(offset, offset + limit);
-  return { members: paginated, totalMembers };
+  return { members, totalMembers };
 }
 
 type MemberListingPageProps = {

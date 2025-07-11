@@ -159,8 +159,16 @@ export default function MemberForm({
         router.push('/dashboard/members');
       }
     } catch (error) {
-      console.error(error);
-      toast.error('An error occurred. Please try again.');
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'An unexpected error occurred.';
+      console.error('Error saving member:', {
+        message: errorMessage,
+        stack: error instanceof Error ? error.stack : 'No stack available.',
+        error
+      });
+      toast.error(`Failed to save member: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
@@ -190,7 +198,7 @@ export default function MemberForm({
                         value={Array.isArray(field.value) ? field.value : []}
                         onValueChange={field.onChange}
                         maxFiles={1}
-                        maxSize={4 * 1024 * 1024}
+                        maxSize={MAX_FILE_SIZE}
                         imageUrl={
                           initialData?.photo_url &&
                           typeof field.value === 'string'
