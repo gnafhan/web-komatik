@@ -1,3 +1,5 @@
+import { Timestamp } from 'firebase/firestore';
+
 export type Member = {
   id: string;
   name: string;
@@ -6,8 +8,8 @@ export type Member = {
   student_id: string;
   photo_url: string;
   bio: string;
-  created_at: string | null;
-  updated_at: string | null;
+  created_at: Timestamp;
+  updated_at: Timestamp;
 };
 
 export type NavItem = {

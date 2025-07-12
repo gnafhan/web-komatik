@@ -1,7 +1,6 @@
 'use client';
 
 import { FileUploader } from '@/components/file-uploader';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -14,23 +13,14 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { db, storage } from '@/database/connection/firebase.client';
 import { Member } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  setDoc,
-  doc,
-  collection,
-  getDocs,
-  query,
-  updateDoc
-} from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
+import { addMember, updateMember } from '../actions';
 
 const MAX_FILE_SIZE = 5000000;
 const ACCEPTED_IMAGE_TYPES = [
@@ -40,47 +30,6 @@ const ACCEPTED_IMAGE_TYPES = [
   'image/webp'
 ];
 
-const getFormSchema = (isEditing: boolean) =>
-  z.object({
-    photo_url: z
-      .any()
-      .refine(
-        (files) => isEditing || (files && files.length > 0),
-        'Image is required.'
-      )
-      .refine(
-        (files) =>
-          !files ||
-          files.length === 0 ||
-          typeof files === 'string' ||
-          files?.[0]?.size <= MAX_FILE_SIZE,
-        `Max file size is 5MB.`
-      )
-      .refine(
-        (files) =>
-          !files ||
-          files.length === 0 ||
-          typeof files === 'string' ||
-          ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
-        '.jpg, .jpeg, .png and .webp files are accepted.'
-      ),
-    name: z.string().min(2, {
-      message: 'Member name must be at least 2 characters.'
-    }),
-    email: z.string().email({
-      message: 'Please enter a valid email address.'
-    }),
-    phone: z.string().min(10, {
-      message: 'Phone number must be at least 10 characters.'
-    }),
-    student_id: z.string().min(5, {
-      message: 'Student ID must be at least 5 characters.'
-    }),
-    bio: z.string().min(10, {
-      message: 'Bio must be at least 10 characters.'
-    })
-  });
-
 export default function MemberForm({
   initialData,
   pageTitle
@@ -88,9 +37,76 @@ export default function MemberForm({
   initialData: Member | null;
   pageTitle: string;
 }) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
-  const formSchema = getFormSchema(!!initialData);
+
+  const formSchema = z
+    .object({
+      name: z
+        .string()
+        .min(2, { message: 'Member name must be at least 2 characters.' }),
+      email: z
+        .string()
+        .email({ message: 'Please enter a valid email address.' }),
+      phone: z
+        .string()
+        .min(10, { message: 'Phone number must be at least 10 characters.' }),
+      student_id: z
+        .string()
+        .min(5, { message: 'Student ID must be at least 5 characters.' }),
+      bio: z
+        .string()
+        .min(10, { message: 'Bio must be at least 10 characters.' }),
+      photo_url: z.any()
+    })
+    .superRefine((data, ctx) => {
+      const { photo_url } = data;
+      const isNewFile = photo_url?.[0] instanceof File;
+
+      if (initialData) {
+        // Edit mode: if a new file is provided, it must be valid.
+        if (isNewFile) {
+          if (photo_url[0].size > MAX_FILE_SIZE) {
+            ctx.addIssue({
+              code: 'custom',
+              path: ['photo_url'],
+              message: 'Max file size is 5MB.'
+            });
+          }
+          if (!ACCEPTED_IMAGE_TYPES.includes(photo_url[0].type)) {
+            ctx.addIssue({
+              code: 'custom',
+              path: ['photo_url'],
+              message: '.jpg, .jpeg, .png and .webp files are accepted.'
+            });
+          }
+        }
+      } else {
+        // Create mode: a new file is required and must be valid.
+        if (!isNewFile) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['photo_url'],
+            message: 'Image is required.'
+          });
+        } else {
+          if (photo_url[0].size > MAX_FILE_SIZE) {
+            ctx.addIssue({
+              code: 'custom',
+              path: ['photo_url'],
+              message: 'Max file size is 5MB.'
+            });
+          }
+          if (!ACCEPTED_IMAGE_TYPES.includes(photo_url[0].type)) {
+            ctx.addIssue({
+              code: 'custom',
+              path: ['photo_url'],
+              message: '.jpg, .jpeg, .png and .webp files are accepted.'
+            });
+          }
+        }
+      }
+    });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -105,73 +121,43 @@ export default function MemberForm({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      setIsLoading(true);
+    const formData = new FormData();
+    const { photo_url, ...otherValues } = values;
 
-      let photoUrl = initialData?.photo_url || '';
-      if (
-        values.photo_url &&
-        values.photo_url.length > 0 &&
-        values.photo_url[0] instanceof File
-      ) {
-        const imageFile = values.photo_url[0];
-        const storageRef = ref(
-          storage,
-          `members/${Date.now()}_${imageFile.name}`
-        );
-        await uploadBytes(storageRef, imageFile);
-        photoUrl = await getDownloadURL(storageRef);
-      }
+    Object.entries(otherValues).forEach(([key, value]) => {
+      formData.append(key, value as string);
+    });
 
-      if (initialData) {
-        const memberRef = doc(db, 'members', initialData.id);
-        await updateDoc(memberRef, {
-          ...values,
-          photo_url: photoUrl,
-          updated_at: new Date()
-        });
-        toast.success('Member updated successfully');
-        router.push('/dashboard/members');
-        router.refresh();
-      } else {
-        const membersCollection = collection(db, 'members');
-        const querySnapshot = await getDocs(query(membersCollection));
-        let highestId = 0;
-        querySnapshot.forEach((doc) => {
-          const docId = parseInt(doc.id, 10);
-          if (docId > highestId) {
-            highestId = docId;
-          }
-        });
-        const newId = (highestId + 1).toString();
-
-        const newMemberRef = doc(db, 'members', newId);
-
-        await setDoc(newMemberRef, {
-          ...values,
-          id: newId,
-          photo_url: photoUrl,
-          created_at: new Date(),
-          updated_at: new Date()
-        });
-
-        toast.success('Member added successfully');
-        router.push('/dashboard/members');
-      }
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'An unexpected error occurred.';
-      console.error('Error saving member:', {
-        message: errorMessage,
-        stack: error instanceof Error ? error.stack : 'No stack available.',
-        error
-      });
-      toast.error(`Failed to save member: ${errorMessage}`);
-    } finally {
-      setIsLoading(false);
+    if (photo_url && photo_url[0] instanceof File) {
+      formData.append('photo_url', photo_url[0]);
     }
+
+    startTransition(async () => {
+      try {
+        const result = initialData
+          ? await updateMember(initialData.id, formData)
+          : await addMember(formData);
+
+        if (result.success) {
+          toast.success(result.message);
+          router.push('/dashboard/members');
+        } else {
+          if (result.errors) {
+            Object.entries(result.errors).forEach(([key, value]) => {
+              if (value) {
+                form.setError(key as keyof z.infer<typeof formSchema>, {
+                  type: 'server',
+                  message: (value as string[]).join(', ')
+                });
+              }
+            });
+          }
+          toast.error(result.message);
+        }
+      } catch (error) {
+        toast.error('An unexpected error occurred. Please try again.');
+      }
+    });
   }
 
   return (
@@ -284,8 +270,8 @@ export default function MemberForm({
                 </FormItem>
               )}
             />
-            <Button type='submit' disabled={isLoading}>
-              {isLoading
+            <Button type='submit' disabled={isPending}>
+              {isPending
                 ? initialData
                   ? 'Updating...'
                   : 'Adding...'

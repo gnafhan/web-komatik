@@ -8,42 +8,32 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { db, storage } from '@/database/connection/firebase.client';
 import { Member } from '@/types';
 import { IconEdit, IconDotsVertical, IconTrash } from '@tabler/icons-react';
-import { deleteDoc, doc } from 'firebase/firestore';
-import { deleteObject, ref } from 'firebase/storage';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
+import { deleteMember } from '../../actions';
 
 interface CellActionProps {
   data: Member;
 }
 
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
-  const [loading, setLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
   const onConfirm = async () => {
-    try {
-      setLoading(true);
-
-      if (data.photo_url) {
-        const photoRef = ref(storage, data.photo_url);
-        await deleteObject(photoRef);
+    startTransition(async () => {
+      const result = await deleteMember(data.id);
+      if (result.success) {
+        toast.success(result.message);
+        setOpen(false);
+      } else {
+        toast.error(result.message);
       }
-
-      await deleteDoc(doc(db, 'members', data.id));
-      toast.success('Member deleted successfully.');
-      router.refresh();
-    } catch (error) {
-      toast.error('Something went wrong');
-    } finally {
-      setLoading(false);
-      setOpen(false);
-    }
+    });
   };
 
   return (
@@ -52,7 +42,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         isOpen={open}
         onClose={() => setOpen(false)}
         onConfirm={onConfirm}
-        loading={loading}
+        loading={isPending}
       />
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
