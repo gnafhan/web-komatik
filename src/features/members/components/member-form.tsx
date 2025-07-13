@@ -14,21 +14,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Member } from '@/types';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useTransition } from 'react';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import * as z from 'zod';
 import { addMember, updateMember } from '../actions';
-
-const MAX_FILE_SIZE = 5000000;
-const ACCEPTED_IMAGE_TYPES = [
-  'image/jpeg',
-  'image/jpg',
-  'image/png',
-  'image/webp'
-];
+import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE, memberSchema } from '../schema';
+import { useServerForm } from '@/hooks/use-server-form';
 
 export default function MemberForm({
   initialData,
@@ -37,128 +27,79 @@ export default function MemberForm({
   initialData: Member | null;
   pageTitle: string;
 }) {
-  const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
-  const formSchema = z
-    .object({
-      name: z
-        .string()
-        .min(2, { message: 'Member name must be at least 2 characters.' }),
-      email: z
-        .string()
-        .email({ message: 'Please enter a valid email address.' }),
-      phone: z
-        .string()
-        .min(10, { message: 'Phone number must be at least 10 characters.' }),
-      student_id: z
-        .string()
-        .min(5, { message: 'Student ID must be at least 5 characters.' }),
-      bio: z
-        .string()
-        .min(10, { message: 'Bio must be at least 10 characters.' }),
-      photo_url: z.any()
+  const formSchema = memberSchema
+    .extend({
+      photo_url: z.any().optional()
     })
-    .superRefine((data, ctx) => {
-      const { photo_url } = data;
-      const isNewFile = photo_url?.[0] instanceof File;
-
-      if (initialData) {
-        // Edit mode: if a new file is provided, it must be valid.
-        if (isNewFile) {
-          if (photo_url[0].size > MAX_FILE_SIZE) {
-            ctx.addIssue({
-              code: 'custom',
-              path: ['photo_url'],
-              message: 'Max file size is 5MB.'
-            });
-          }
-          if (!ACCEPTED_IMAGE_TYPES.includes(photo_url[0].type)) {
-            ctx.addIssue({
-              code: 'custom',
-              path: ['photo_url'],
-              message: '.jpg, .jpeg, .png and .webp files are accepted.'
-            });
-          }
+    .refine(
+      (data) => {
+        if (!initialData) {
+          return data.photo_url?.[0] instanceof File;
         }
-      } else {
-        // Create mode: a new file is required and must be valid.
-        if (!isNewFile) {
-          ctx.addIssue({
-            code: 'custom',
-            path: ['photo_url'],
-            message: 'Image is required.'
-          });
-        } else {
-          if (photo_url[0].size > MAX_FILE_SIZE) {
-            ctx.addIssue({
-              code: 'custom',
-              path: ['photo_url'],
-              message: 'Max file size is 5MB.'
-            });
-          }
-          if (!ACCEPTED_IMAGE_TYPES.includes(photo_url[0].type)) {
-            ctx.addIssue({
-              code: 'custom',
-              path: ['photo_url'],
-              message: '.jpg, .jpeg, .png and .webp files are accepted.'
-            });
-          }
-        }
+        return true;
+      },
+      {
+        message: 'Image is required.',
+        path: ['photo_url']
       }
-    });
+    )
+    .refine(
+      (data) => {
+        if (data.photo_url?.[0] instanceof File) {
+          return data.photo_url[0].size <= MAX_FILE_SIZE;
+        }
+        return true;
+      },
+      {
+        message: `Max file size is 5MB.`,
+        path: ['photo_url']
+      }
+    )
+    .refine(
+      (data) => {
+        if (data.photo_url?.[0] instanceof File) {
+          return ACCEPTED_IMAGE_TYPES.includes(data.photo_url[0].type);
+        }
+        return true;
+      },
+      {
+        message: '.jpg, .jpeg, .png and .webp files are accepted.',
+        path: ['photo_url']
+      }
+    );
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const { form, onSubmit, isPending } = useServerForm({
+    schema: formSchema,
+    action: async (values) => {
+      const formData = new FormData();
+      const { photo_url, ...otherValues } = values;
+
+      Object.entries(otherValues).forEach(([key, value]) => {
+        formData.append(key, value as string);
+      });
+
+      if (photo_url && photo_url[0] instanceof File) {
+        formData.append('photo_url', photo_url[0]);
+      }
+
+      return initialData
+        ? await updateMember(initialData.id, formData)
+        : await addMember(formData);
+    },
     defaultValues: {
       name: initialData?.name || '',
       email: initialData?.email || '',
       phone: initialData?.phone || '',
       student_id: initialData?.student_id || '',
       bio: initialData?.bio || '',
-      photo_url: initialData?.photo_url || undefined
+      photo_url: undefined
+    },
+    onSuccess: () => {
+      router.push('/dashboard/members');
     }
   });
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const formData = new FormData();
-    const { photo_url, ...otherValues } = values;
-
-    Object.entries(otherValues).forEach(([key, value]) => {
-      formData.append(key, value as string);
-    });
-
-    if (photo_url && photo_url[0] instanceof File) {
-      formData.append('photo_url', photo_url[0]);
-    }
-
-    startTransition(async () => {
-      try {
-        const result = initialData
-          ? await updateMember(initialData.id, formData)
-          : await addMember(formData);
-
-        if (result.success) {
-          toast.success(result.message);
-          router.push('/dashboard/members');
-        } else {
-          if (result.errors) {
-            Object.entries(result.errors).forEach(([key, value]) => {
-              if (value) {
-                form.setError(key as keyof z.infer<typeof formSchema>, {
-                  type: 'server',
-                  message: (value as string[]).join(', ')
-                });
-              }
-            });
-          }
-          toast.error(result.message);
-        }
-      } catch (error) {
-        toast.error('An unexpected error occurred. Please try again.');
-      }
-    });
-  }
 
   return (
     <Card className='mx-auto w-full'>
@@ -181,16 +122,11 @@ export default function MemberForm({
                     </FormLabel>
                     <FormControl>
                       <FileUploader
-                        value={Array.isArray(field.value) ? field.value : []}
+                        value={field.value?.[0] ? [field.value[0]] : []}
                         onValueChange={field.onChange}
                         maxFiles={1}
                         maxSize={MAX_FILE_SIZE}
-                        imageUrl={
-                          initialData?.photo_url &&
-                          typeof field.value === 'string'
-                            ? field.value
-                            : undefined
-                        }
+                        imageUrl={initialData?.photo_url}
                       />
                     </FormControl>
                     <FormMessage />

@@ -7,14 +7,14 @@ export const metadata = {
   title: 'Dashboard : Member View'
 };
 
-type PageProps = { params: Promise<{ memberId: string }> };
+type PageProps = { params: { memberId: string } };
 
-export default async function Page(props: PageProps) {
+export default function Page({ params }: PageProps) {
   return (
     <PageContainer scrollable>
       <div className='flex-1 space-y-4'>
         <Suspense fallback={<FormCardSkeleton />}>
-          <MemberViewPage memberId={(await props.params).memberId} />
+          <MemberViewPage memberId={params.memberId} />
         </Suspense>
       </div>
     </PageContainer>
