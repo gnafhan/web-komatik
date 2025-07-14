@@ -92,8 +92,13 @@ export default function DivisionListing() {
       setError(null);
       setSuccess(null);
       try {
+        if (!division._docId) {
+          setError('Division document ID is missing.');
+          setLoading(false);
+          return;
+        }
         await import('../utils/division-service').then((mod) =>
-          mod.updateDivision(division._docId, form)
+          mod.updateDivision(division._docId as string, form)
         );
         setSuccess('Division updated successfully!');
         onSuccess();
