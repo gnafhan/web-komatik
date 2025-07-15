@@ -19,16 +19,6 @@ const baseConfig: NextConfig = {
         protocol: 'https',
         hostname: 'storage.googleapis.com',
         port: ''
-      },
-      {
-        protocol: 'https',
-        hostname: 'avatars.githubusercontent.com',
-        port: ''
-      },
-      {
-        protocol: 'https',
-        hostname: 'cdn.jsdelivr.net',
-        port: ''
       }
     ]
   },
