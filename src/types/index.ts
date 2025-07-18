@@ -1,3 +1,4 @@
+import { Timestamp } from 'firebase/firestore';
 import { Icons } from '@/components/icons';
 import { Timestamp } from 'firebase/firestore';
 
@@ -9,6 +10,18 @@ export type Period = {
   end_date: Date;
   created_at?: Timestamp;
   updated_at?: Timestamp;
+};
+
+export type Member = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  student_id: string;
+  photo_url: string;
+  bio: string;
+  created_at: Timestamp;
+  updated_at: Timestamp;
 };
 
 export interface NavItem {

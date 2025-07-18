@@ -46,3 +46,15 @@ next-env.d.ts
 
 # Sentry Config File
 .env.sentry-build-plugin
+context_portal/alembic.ini
+context_portal/context.db
+context_portal/alembic/env.py
+context_portal/alembic/__pycache__/env.cpython-312.pyc
+context_portal/alembic/versions/2025_06_17_initial_schema.py
+context_portal/alembic/versions/__pycache__/2025_06_17_initial_schema.cpython-312.pyc
+context_portal/conport_vector_data/chroma.sqlite3
+context_portal/conport_vector_data/49b523e8-62a7-48d9-9fb5-52366df3d001/data_level0.bin
+context_portal/conport_vector_data/49b523e8-62a7-48d9-9fb5-52366df3d001/header.bin
+context_portal/conport_vector_data/49b523e8-62a7-48d9-9fb5-52366df3d001/length.bin
+context_portal/conport_vector_data/49b523e8-62a7-48d9-9fb5-52366df3d001/link_lists.bin
+context_portal/logs/conport.log
