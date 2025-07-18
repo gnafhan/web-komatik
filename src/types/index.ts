@@ -1,6 +1,16 @@
 import { Timestamp } from 'firebase/firestore';
 import { Icons } from '@/components/icons';
 
+export type Period = {
+  id: number;
+  name: string;
+  is_active: boolean;
+  start_date: Date;
+  end_date: Date;
+  created_at?: Timestamp;
+  updated_at?: Timestamp;
+};
+
 export type Member = {
   id: string;
   name: string;
