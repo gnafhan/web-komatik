@@ -1,6 +1,5 @@
 import { Timestamp } from 'firebase/firestore';
 import { Icons } from '@/components/icons';
-import { Timestamp } from 'firebase/firestore';
 
 export type Period = {
   id: number;
