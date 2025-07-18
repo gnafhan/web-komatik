@@ -1,4 +1,15 @@
 import { Icons } from '@/components/icons';
+import { Timestamp } from 'firebase/firestore';
+
+export type Period = {
+  id: number;
+  name: string;
+  is_active: boolean;
+  start_date: Date;
+  end_date: Date;
+  created_at?: Timestamp;
+  updated_at?: Timestamp;
+};
 
 export interface NavItem {
   title: string;
