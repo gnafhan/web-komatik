@@ -1,6 +1,16 @@
 import { Timestamp } from 'firebase/firestore';
 import { Icons } from '@/components/icons';
 
+export type Division = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  order_index: number;
+  created_at: Timestamp;
+  updated_at: Timestamp;
+};
+
 export type Member = {
   id: string;
   name: string;

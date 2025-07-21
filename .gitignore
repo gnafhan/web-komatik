@@ -58,3 +58,5 @@ context_portal/conport_vector_data/49b523e8-62a7-48d9-9fb5-52366df3d001/header.b
 context_portal/conport_vector_data/49b523e8-62a7-48d9-9fb5-52366df3d001/length.bin
 context_portal/conport_vector_data/49b523e8-62a7-48d9-9fb5-52366df3d001/link_lists.bin
 context_portal/logs/conport.log
+
+*firebase-adminsdk-*.json
