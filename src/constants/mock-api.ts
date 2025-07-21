@@ -58,7 +58,7 @@ export const fakeProducts = {
       sampleProducts.push(generateRandomProductData(i));
     }
 
-    this.records = sampleProducts;
+    // End of file
   },
 
   // Get all products with optional category filtering and search
