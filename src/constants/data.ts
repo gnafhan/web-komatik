@@ -32,7 +32,7 @@ export const navItems: NavItem[] = [
   {
     title: 'Division',
     url: '/dashboard/division',
-    icon: 'user', // Ganti dengan icon lain jika ada, misal 'layers' atau 'building'
+    icon: 'hierarchy',
     shortcut: ['d', 'v'],
     isActive: false,
     items: []
