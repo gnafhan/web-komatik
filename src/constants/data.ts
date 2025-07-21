@@ -30,6 +30,14 @@ export const navItems: NavItem[] = [
     items: []
   },
   {
+    title: 'Division',
+    url: '/dashboard/division',
+    icon: 'hierarchy',
+    shortcut: ['d', 'v'],
+    isActive: false,
+    items: []
+  },
+  {
     title: 'Members',
     url: '/dashboard/members',
     icon: 'user',
