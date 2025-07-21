@@ -24,12 +24,11 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
   const onConfirm = async () => {
     if (loading) return;
-    setLoading(true);
     try {
       await deletePeriod(data.id);
       router.refresh();
     } finally {
-      setLoading(false);
+      setOpen(false);
     }
   };
 
