@@ -2,7 +2,9 @@
 import { DataTableColumnHeader } from '@/components/ui/table/data-table-column-header';
 import { Division } from '@/types';
 import { Column, ColumnDef } from '@tanstack/react-table';
+
 import { Text } from 'lucide-react';
+import { CellAction } from './cell-action';
 
 export const columns: ColumnDef<Division>[] = [
   {
@@ -45,5 +47,10 @@ export const columns: ColumnDef<Division>[] = [
     accessorKey: 'updated_at',
     header: 'UPDATED AT',
     size: 180
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => <CellAction data={row.original} />,
+    size: 50
   }
 ];

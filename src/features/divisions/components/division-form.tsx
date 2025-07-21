@@ -48,7 +48,7 @@ export default function DivisionForm({
       order_index: initialData?.order_index ?? 0
     },
     onSuccess: () => {
-      router.refresh();
+      router.push('/dashboard/division');
     }
   });
 
@@ -122,7 +122,13 @@ export default function DivisionForm({
                 </FormItem>
               )}
             />
-            <Button type='submit'>Save</Button>
+            <Button
+              type='submit'
+              disabled={isPending}
+              aria-disabled={isPending}
+            >
+              {isPending ? 'Saving...' : 'Save'}
+            </Button>
           </form>
         </Form>
       </CardContent>
