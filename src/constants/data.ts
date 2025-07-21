@@ -30,6 +30,14 @@ export const navItems: NavItem[] = [
     items: [] // No child items
   },
   {
+    title: 'Division',
+    url: '/dashboard/division',
+    icon: 'user', // Ganti dengan icon lain jika ada, misal 'layers' atau 'building'
+    shortcut: ['d', 'v'],
+    isActive: false,
+    items: []
+  },
+  {
     title: 'Members',
     url: '/dashboard/members',
     icon: 'user',
