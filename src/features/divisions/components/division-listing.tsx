@@ -11,8 +11,22 @@ async function fetchDivisions({
   limit?: number;
   search?: string;
 }) {
-  const divisionsRef = db.collection('divisions');
-  const snapshot = await divisionsRef.orderBy('order_index', 'asc').get();
+  // WARNING: Offset-based pagination is inefficient in Firestore for large offsets.
+  // For best performance, migrate to cursor-based pagination in the UI.
+  let query = db.collection('divisions').orderBy('order_index', 'asc');
+
+  // Firestore only supports prefix search on a single field efficiently.
+  // Here, we support prefix search on 'name' only.
+  if (search) {
+    // Prefix search: name >= search && name < search + \uf8ff
+    query = query
+      .where('name', '>=', search)
+      .where('name', '<=', search + '\uf8ff');
+  }
+
+  // For offset-based pagination, fetch (page * limit) docs and slice in memory.
+  // This is inefficient for large page numbers.
+  const snapshot = await query.limit(page * limit).get();
 
   let divisions = snapshot.docs.map((doc) => {
     const data = doc.data();
@@ -24,18 +38,23 @@ async function fetchDivisions({
     } as Division;
   });
 
-  if (search) {
-    const s = search.toLowerCase();
-    divisions = divisions.filter(
-      (division) =>
-        division.name.toLowerCase().includes(s) ||
-        division.slug.toLowerCase().includes(s) ||
-        division.description.toLowerCase().includes(s)
-    );
-  }
-
-  const totalDivisions = divisions.length;
+  // Only keep the current page's items
   const paginatedDivisions = divisions.slice((page - 1) * limit, page * limit);
+
+  // Get total count (inefficient: requires a separate query)
+  let totalDivisions = 0;
+  if (search) {
+    // Count with the same filter
+    const countSnap = await db
+      .collection('divisions')
+      .where('name', '>=', search)
+      .where('name', '<=', search + '\uf8ff')
+      .get();
+    totalDivisions = countSnap.size;
+  } else {
+    const countSnap = await db.collection('divisions').get();
+    totalDivisions = countSnap.size;
+  }
 
   return { divisions: paginatedDivisions, totalDivisions };
 }
