@@ -1,8 +1,7 @@
 import { Member } from '@/types';
 import { notFound } from 'next/navigation';
 import MemberForm from './member-form';
-import { db } from '@/database/connection/firebase.client';
-import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/database/connection/firebase.server';
 
 type TMemberViewPageProps = {
   memberId: string;
@@ -15,9 +14,9 @@ export default async function MemberViewPage({
   let pageTitle = 'Create New Member';
 
   if (memberId !== 'new') {
-    const docRef = doc(db, 'members', memberId);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
+    const docRef = db.collection('members').doc(memberId);
+    const docSnap = await docRef.get();
+    if (docSnap.exists) {
       const data = docSnap.data();
       if (data) {
         member = {

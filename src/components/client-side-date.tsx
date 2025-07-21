@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Timestamp } from 'firebase/firestore';
 
 interface ClientSideDateProps {
   dateString: string | null | undefined;
