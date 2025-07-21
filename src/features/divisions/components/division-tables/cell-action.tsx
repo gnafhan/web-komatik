@@ -28,8 +28,8 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const onConfirm = async () => {
     startTransition(async () => {
       const result = await deleteDivision(data.id);
-      if (result?.success !== false) {
-        toast.success('Division deleted');
+      if (result && result.success) {
+        toast.success(result.message || 'Division deleted');
         setOpen(false);
         router.refresh();
       } else {

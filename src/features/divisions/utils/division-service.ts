@@ -43,6 +43,14 @@ export async function updateDivision(docId: string, data: Partial<Division>) {
 }
 
 export async function deleteDivision(docId: string) {
-  const divisionDoc = doc(divisionsRef, docId);
-  await deleteDoc(divisionDoc);
+  try {
+    const divisionDoc = doc(divisionsRef, docId);
+    await deleteDoc(divisionDoc);
+    return { success: true, message: 'Division deleted' };
+  } catch (e: any) {
+    return {
+      success: false,
+      message: e?.message || 'Failed to delete division'
+    };
+  }
 }
