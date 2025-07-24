@@ -3,13 +3,13 @@ import { db } from '@/database/connection/firebase.server';
 import PrestasiClient from './prestasi-client';
 
 async function fetchPrestasiList({
-  page = 1,
-  limit = 10,
-  search
+  _page = 1,
+  _limit = 10,
+  _search
 }: {
-  page?: number;
-  limit?: number;
-  search?: string;
+  _page?: number;
+  _limit?: number;
+  _search?: string;
 }) {
   const prestasiRef = db.collection('prestasi');
   const snapshot = await prestasiRef.orderBy('created_at', 'desc').get();
@@ -70,9 +70,9 @@ export default async function PrestasiListingPage({
   const updatedTo = Array.isArray(updatedAtTo) ? updatedAtTo[0] : updatedAtTo;
 
   let { prestasi, totalPrestasi } = await fetchPrestasiList({
-    page: _page,
-    limit: pageLimit,
-    search: _search
+    _page: _page,
+    _limit: pageLimit,
+    _search: _search
   });
 
   // Server-side search filtering

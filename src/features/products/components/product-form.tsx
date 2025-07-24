@@ -74,6 +74,7 @@ export default function ProductForm({
     values: defaultValues
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function onSubmit(_values: z.infer<typeof formSchema>) {
     // Form submission logic would be implemented here
   }
