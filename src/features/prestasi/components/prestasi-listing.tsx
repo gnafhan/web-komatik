@@ -2,6 +2,7 @@ import { Prestasi } from '@/types';
 import { db } from '@/database/connection/firebase.server';
 import PrestasiClient from './prestasi-client';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function fetchPrestasiList({
   _page = 1,
   _limit = 10,
@@ -11,6 +12,9 @@ async function fetchPrestasiList({
   _limit?: number;
   _search?: string;
 }) {
+  void _page;
+  void _limit;
+  void _search;
   const prestasiRef = db.collection('prestasi');
   const snapshot = await prestasiRef.orderBy('created_at', 'desc').get();
 
