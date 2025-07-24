@@ -8,7 +8,6 @@ import { fileSchema, memberSchema } from './schema';
 
 function handleError(error: unknown, context: string) {
   const errorId = randomUUID();
-  console.error(`Error in ${context} (ID: ${errorId}):`, error);
   return {
     success: false,
     message: `An unexpected error occurred. Please try again. (Error ID: ${errorId})`
@@ -119,10 +118,10 @@ export async function updateMember(id: string, formData: FormData) {
         try {
           await bucket.file(photoFilename).delete();
         } catch (deleteError) {
-          console.error(
-            'Failed to delete old image during update:',
-            deleteError
-          );
+          // console.error(
+          //   'Failed to delete old image during update:',
+          //   deleteError
+          // );
         }
       }
 
@@ -165,10 +164,10 @@ export async function deleteMember(id: string) {
       try {
         await bucket.file(photoFilename).delete();
       } catch (error) {
-        console.error(
-          `Failed to delete image '${photoFilename}' for member '${id}', but proceeding with doc deletion:`,
-          error
-        );
+        // console.error(
+        //   `Failed to delete image '${photoFilename}' for member '${id}', but proceeding with doc deletion:`,
+        //   error
+        // );
       }
     }
 

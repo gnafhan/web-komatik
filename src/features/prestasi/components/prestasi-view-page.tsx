@@ -60,17 +60,10 @@ export default async function PrestasiViewPage({
         members = [...members, ...missingMembers];
       }
       // Debug logging
-      console.log('prestasi.members:', memberIds);
-      console.log(
-        'members:',
-        members.map((m) => m.id)
-      );
     } else {
       notFound();
     }
   }
-
-  console.log(prestasi);
 
   return (
     <PrestasiForm

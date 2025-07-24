@@ -4,7 +4,6 @@ import { Prestasi } from '@/types';
 import { Column, ColumnDef } from '@tanstack/react-table';
 import Image from 'next/image';
 import { CellAction } from './cell-action';
-import { Text } from 'lucide-react';
 import { ClientSideDate } from '@/components/client-side-date';
 
 export const columns: ColumnDef<Prestasi>[] = [

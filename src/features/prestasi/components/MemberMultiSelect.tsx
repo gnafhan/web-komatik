@@ -24,16 +24,7 @@ export default function MemberMultiSelect({
   const inputRef = useRef<HTMLInputElement>(null);
   // Defensive: always use an array
   const safeValue = Array.isArray(value) ? value : value ? [String(value)] : [];
-  console.log('MemberMultiSelect value:', safeValue);
-  console.log(
-    'MemberMultiSelect members:',
-    members.map((m) => m.id)
-  );
   const selectedMembers = members.filter((m) => safeValue.includes(m.id));
-  console.log(
-    'MemberMultiSelect selectedMembers:',
-    selectedMembers.map((m) => m.id)
-  );
   const filtered = members.filter(
     (m) =>
       m.name.toLowerCase().includes(search.toLowerCase()) ||

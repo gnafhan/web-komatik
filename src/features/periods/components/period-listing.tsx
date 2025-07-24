@@ -3,13 +3,7 @@ import { searchParamsCache } from '@/lib/searchparams';
 import { PeriodTable } from './period-tables';
 import { columns } from './period-tables/columns';
 import { db } from '@/database/connection/firebase.client';
-import {
-  collection,
-  getDocs,
-  query,
-  limit as limitFn,
-  where
-} from 'firebase/firestore';
+import { collection, getDocs, query, limit } from 'firebase/firestore';
 
 // Helper to fetch products from Firestore
 async function fetchProducts({

@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { columns } from './prestasi-tables';
 import { useDataTable } from '@/hooks/use-data-table';
 import { DataTable } from '@/components/ui/table/data-table';
-import { Input } from '@/components/ui/input';
 import { DataTableToolbar } from '@/components/ui/table/data-table-toolbar';
 
 export default function PrestasiClient({
@@ -16,7 +15,6 @@ export default function PrestasiClient({
   totalPrestasi: number;
 }) {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const search = searchParams.get('search') || '';
 
   if (totalPrestasi === 0 && !search) {

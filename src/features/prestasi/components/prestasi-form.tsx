@@ -30,13 +30,6 @@ import {
 } from '../actions';
 import { Controller } from 'react-hook-form';
 
-// Helper to fetch awards for dynamic enum
-async function fetchAwards(): Promise<string[]> {
-  const res = await fetch('/api/prestasi-awards');
-  if (!res.ok) return [];
-  return res.json();
-}
-
 export default function PrestasiForm({
   initialData,
   pageTitle,

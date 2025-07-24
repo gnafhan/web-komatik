@@ -14,7 +14,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar';
-import { company } from './layout/app-sidebar';
 import { APP_INFO } from '@/constants/app-info';
 
 interface Tenant {

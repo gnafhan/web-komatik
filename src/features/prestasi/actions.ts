@@ -8,7 +8,6 @@ import { fileSchema, prestasiSchema } from './schema';
 
 function handleError(error: unknown, context: string) {
   const errorId = randomUUID();
-  console.error(`Error in ${context} (ID: ${errorId}):`, error);
   return {
     success: false,
     message: `An unexpected error occurred. Please try again. (Error ID: ${errorId})`

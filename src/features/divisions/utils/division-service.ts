@@ -5,8 +5,7 @@ import {
   updateDoc,
   deleteDoc,
   doc,
-  serverTimestamp,
-  Timestamp
+  serverTimestamp
 } from 'firebase/firestore';
 import { db } from '@/database/connection/firebase.client';
 import { Division } from '@/types';

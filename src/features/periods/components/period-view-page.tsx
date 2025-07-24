@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import ProductForm from '@/features/products/components/product-form';
 import { getPeriodById } from '../utils';
 import { Period } from '@/types';
 import PeriodForm from './period-form';

@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/select';
 import { updatePeriodByFieldId } from '../utils';
 import { useRouter } from 'next/navigation';
-import { addDoc, collection, doc, getDocs } from 'firebase/firestore';
+import { addDoc, collection, getDocs } from 'firebase/firestore';
 import { db } from '@/database/connection/firebase.client';
 import { Timestamp } from 'firebase/firestore';
 import { Period } from '@/types';
@@ -73,8 +73,6 @@ export default function PeriodForm({
     const snapshot = await getDocs(collection(db, 'periods'));
     let maxId = 0;
     snapshot.forEach((doc) => {
-      let numberId = doc.id;
-      console.log(numberId);
       const data = doc.data();
       // Pastikan id bertipe number
       if (typeof data.id === 'number' && data.id > maxId) {

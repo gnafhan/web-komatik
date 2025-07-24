@@ -37,15 +37,6 @@ interface ProfileFormType {
 }
 
 const ProfileCreateForm: React.FC<ProfileFormType> = ({ initialData }) => {
-  const params = useParams();
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
-  const title = initialData ? 'Edit product' : 'Create Your Profile';
-  const description = initialData
-    ? 'Edit a product.'
-    : 'To create your resume, we first need some basic information about you.';
-  const [previousStep, setPreviousStep] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
   const [data, setData] = useState({});
 
@@ -125,14 +116,12 @@ const ProfileCreateForm: React.FC<ProfileFormType> = ({ initialData }) => {
       if (currentStep === steps.length - 2) {
         await form.handleSubmit(processForm)();
       }
-      setPreviousStep(currentStep);
       setCurrentStep((step) => step + 1);
     }
   };
 
   const prev = () => {
     if (currentStep > 0) {
-      setPreviousStep(currentStep);
       setCurrentStep((step) => step - 1);
     }
   };
@@ -143,13 +132,20 @@ const ProfileCreateForm: React.FC<ProfileFormType> = ({ initialData }) => {
   return (
     <>
       <div className='flex items-center justify-between'>
-        <Heading title={title} description={description} />
+        <Heading
+          title={initialData ? 'Edit product' : 'Create Your Profile'}
+          description={
+            initialData
+              ? 'Edit a product.'
+              : 'To create your resume, we first need some basic information about you.'
+          }
+        />
         {initialData && (
           <Button
-            disabled={loading}
+            disabled={false}
             variant='destructive'
             size='sm'
-            onClick={() => setOpen(true)}
+            onClick={() => {}}
           >
             <IconTrash className='h-4 w-4' />
           </Button>
@@ -211,11 +207,7 @@ const ProfileCreateForm: React.FC<ProfileFormType> = ({ initialData }) => {
                     <FormItem>
                       <FormLabel>First Name</FormLabel>
                       <FormControl>
-                        <Input
-                          disabled={loading}
-                          placeholder='John'
-                          {...field}
-                        />
+                        <Input disabled={false} placeholder='John' {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -228,11 +220,7 @@ const ProfileCreateForm: React.FC<ProfileFormType> = ({ initialData }) => {
                     <FormItem>
                       <FormLabel>Last Name</FormLabel>
                       <FormControl>
-                        <Input
-                          disabled={loading}
-                          placeholder='Doe'
-                          {...field}
-                        />
+                        <Input disabled={false} placeholder='Doe' {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -246,7 +234,7 @@ const ProfileCreateForm: React.FC<ProfileFormType> = ({ initialData }) => {
                       <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input
-                          disabled={loading}
+                          disabled={false}
                           placeholder='johndoe@gmail.com'
                           {...field}
                         />
@@ -265,7 +253,7 @@ const ProfileCreateForm: React.FC<ProfileFormType> = ({ initialData }) => {
                         <Input
                           type='number'
                           placeholder='Enter you contact number'
-                          disabled={loading}
+                          disabled={false}
                           {...field}
                         />
                       </FormControl>
@@ -280,7 +268,7 @@ const ProfileCreateForm: React.FC<ProfileFormType> = ({ initialData }) => {
                     <FormItem>
                       <FormLabel>Country</FormLabel>
                       <Select
-                        disabled={loading}
+                        disabled={false}
                         onValueChange={field.onChange}
                         value={field.value}
                         defaultValue={field.value}
@@ -313,7 +301,7 @@ const ProfileCreateForm: React.FC<ProfileFormType> = ({ initialData }) => {
                     <FormItem>
                       <FormLabel>City</FormLabel>
                       <Select
-                        disabled={loading}
+                        disabled={false}
                         onValueChange={field.onChange}
                         value={field.value}
                         defaultValue={field.value}
@@ -388,7 +376,7 @@ const ProfileCreateForm: React.FC<ProfileFormType> = ({ initialData }) => {
                                 <FormControl>
                                   <Input
                                     type='text'
-                                    disabled={loading}
+                                    disabled={false}
                                     {...field}
                                   />
                                 </FormControl>
@@ -405,7 +393,7 @@ const ProfileCreateForm: React.FC<ProfileFormType> = ({ initialData }) => {
                                 <FormControl>
                                   <Input
                                     type='text'
-                                    disabled={loading}
+                                    disabled={false}
                                     {...field}
                                   />
                                 </FormControl>
@@ -422,7 +410,7 @@ const ProfileCreateForm: React.FC<ProfileFormType> = ({ initialData }) => {
                                 <FormControl>
                                   <Input
                                     type='date'
-                                    disabled={loading}
+                                    disabled={false}
                                     {...field}
                                   />
                                 </FormControl>
@@ -439,7 +427,7 @@ const ProfileCreateForm: React.FC<ProfileFormType> = ({ initialData }) => {
                                 <FormControl>
                                   <Input
                                     type='date'
-                                    disabled={loading}
+                                    disabled={false}
                                     {...field}
                                   />
                                 </FormControl>
@@ -454,7 +442,7 @@ const ProfileCreateForm: React.FC<ProfileFormType> = ({ initialData }) => {
                               <FormItem>
                                 <FormLabel>Job country</FormLabel>
                                 <Select
-                                  disabled={loading}
+                                  disabled={false}
                                   onValueChange={field.onChange}
                                   value={field.value}
                                   defaultValue={field.value}
@@ -489,7 +477,7 @@ const ProfileCreateForm: React.FC<ProfileFormType> = ({ initialData }) => {
                               <FormItem>
                                 <FormLabel>Job city</FormLabel>
                                 <Select
-                                  disabled={loading}
+                                  disabled={false}
                                   onValueChange={field.onChange}
                                   value={field.value}
                                   defaultValue={field.value}

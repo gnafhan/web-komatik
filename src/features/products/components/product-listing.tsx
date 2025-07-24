@@ -3,13 +3,7 @@ import { searchParamsCache } from '@/lib/searchparams';
 import { ProductTable } from './product-tables';
 import { columns } from './product-tables/columns';
 import { db } from '@/database/connection/firebase.client';
-import {
-  collection,
-  getDocs,
-  query,
-  limit as limitFn,
-  where
-} from 'firebase/firestore';
+import { collection, getDocs, query } from 'firebase/firestore';
 
 // Helper to fetch products from Firestore
 async function fetchProducts({

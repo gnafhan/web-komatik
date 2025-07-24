@@ -41,5 +41,4 @@ export async function seedProducts() {
     batch.set(docRef, product);
   }
   await batch.commit();
-  console.log('Seeded 20 products to Firestore.');
 }
