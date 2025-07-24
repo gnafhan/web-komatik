@@ -55,8 +55,9 @@ export default async function PrestasiListingPage({
   updatedAtFrom,
   updatedAtTo
 }: PrestasiListingPageProps) {
-  const page = Number(Array.isArray(pageParam) ? pageParam[0] : pageParam) || 1;
-  const search = Array.isArray(searchParam) ? searchParam[0] : searchParam;
+  const _page =
+    Number(Array.isArray(pageParam) ? pageParam[0] : pageParam) || 1;
+  const _search = Array.isArray(searchParam) ? searchParam[0] : searchParam;
   const pageLimit =
     Number(Array.isArray(perPageParam) ? perPageParam[0] : perPageParam) || 10;
   const createdFrom = Array.isArray(createdAtFrom)
@@ -69,14 +70,14 @@ export default async function PrestasiListingPage({
   const updatedTo = Array.isArray(updatedAtTo) ? updatedAtTo[0] : updatedAtTo;
 
   let { prestasi, totalPrestasi } = await fetchPrestasiList({
-    page,
+    page: _page,
     limit: pageLimit,
-    search
+    search: _search
   });
 
   // Server-side search filtering
-  if (search) {
-    const s = search.toLowerCase();
+  if (_search) {
+    const s = _search.toLowerCase();
     prestasi = prestasi.filter(
       (item) =>
         item.title.toLowerCase().includes(s) ||
@@ -118,8 +119,8 @@ export default async function PrestasiListingPage({
 
   totalPrestasi = prestasi.length;
   const paginatedPrestasi = prestasi.slice(
-    (page - 1) * pageLimit,
-    page * pageLimit
+    (_page - 1) * pageLimit,
+    _page * pageLimit
   );
 
   return (
