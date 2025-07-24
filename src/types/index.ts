@@ -33,6 +33,20 @@ export type Member = {
   updated_at: Timestamp;
 };
 
+export type Prestasi = {
+  id: string;
+  image_url: string;
+  title: string;
+  description: string;
+  team_name: string;
+  members: Member[];
+  category: string;
+  award: string; // dynamic enum, user can add new awards
+  year: Date;
+  created_at: Timestamp;
+  updated_at: Timestamp;
+};
+
 export interface NavItem {
   title: string;
   url: string;

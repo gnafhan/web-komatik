@@ -11,6 +11,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { Cross2Icon } from '@radix-ui/react-icons';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { PrestasiDateFilter } from '@/features/prestasi/components/PrestasiDateFilter';
 
 interface DataTableToolbarProps<TData> extends React.ComponentProps<'div'> {
   table: Table<TData>;
@@ -23,15 +25,57 @@ export function DataTableToolbar<TData>({
   ...props
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
-
   const columns = React.useMemo(
     () => table.getAllColumns().filter((column) => column.getCanFilter()),
     [table]
   );
-
   const onReset = React.useCallback(() => {
     table.resetColumnFilters();
   }, [table]);
+
+  // Add search param wiring
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const search = searchParams.get('search') || '';
+
+  const [searchInput, setSearchInput] = React.useState(search);
+  // Debounce for search input
+  const debounceRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchInput(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      const params = new URLSearchParams(Array.from(searchParams.entries()));
+      if (value) {
+        params.set('search', value);
+      } else {
+        params.delete('search');
+      }
+      router.replace('?' + params.toString());
+      router.refresh();
+    }, 400);
+  };
+
+  React.useEffect(() => {
+    setSearchInput(search);
+  }, [search]);
+
+  // Date filter handlers
+  const handleDateChange = (
+    from: string | null,
+    to: string | null,
+    type: 'createdAt' | 'updatedAt'
+  ) => {
+    const params = new URLSearchParams(Array.from(searchParams.entries()));
+    if (from) params.set(`${type}From`, from);
+    else params.delete(`${type}From`);
+    if (to) params.set(`${type}To`, to);
+    else params.delete(`${type}To`);
+    router.replace('?' + params.toString());
+    router.refresh();
+  };
 
   return (
     <div
@@ -44,9 +88,14 @@ export function DataTableToolbar<TData>({
       {...props}
     >
       <div className='flex flex-1 flex-wrap items-center gap-2'>
-        {columns.map((column) => (
-          <DataTableToolbarFilter key={column.id} column={column} />
-        ))}
+        {/* Only render the global search input once, before other filters */}
+        <Input
+          placeholder='Search Prestasi...'
+          value={searchInput}
+          onChange={handleSearchChange}
+          className='h-8 w-40 lg:w-56'
+        />
+        {/* Date filters removed as requested */}
         {isFiltered && (
           <Button
             aria-label='Reset filters'
