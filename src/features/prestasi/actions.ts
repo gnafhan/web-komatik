@@ -6,7 +6,7 @@ import { FieldValue } from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
 import { fileSchema, prestasiSchema } from './schema';
 
-function handleError(error: unknown, context: string) {
+function handleError() {
   const errorId = randomUUID();
   return {
     success: false,
@@ -71,7 +71,7 @@ export async function addPrestasi(formData: FormData) {
     revalidatePath('/dashboard/prestasi');
     return { success: true, message: 'Prestasi added successfully.' };
   } catch (error) {
-    return handleError(error, 'addPrestasi');
+    return handleError();
   }
 }
 
@@ -114,7 +114,7 @@ export async function updatePrestasi(id: string, formData: FormData) {
     revalidatePath('/dashboard/prestasi');
     return { success: true, message: 'Prestasi updated successfully.' };
   } catch (error) {
-    return handleError(error, 'updatePrestasi');
+    return handleError();
   }
 }
 
@@ -125,7 +125,7 @@ export async function deletePrestasi(id: string) {
     revalidatePath('/dashboard/prestasi');
     return { success: true, message: 'Prestasi deleted successfully.' };
   } catch (error) {
-    return handleError(error, 'deletePrestasi');
+    return handleError();
   }
 }
 

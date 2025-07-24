@@ -6,7 +6,6 @@ import { seedProducts } from './product-seeder';
     await seedProducts();
     process.exit(0);
   } catch (err) {
-    console.error('Database seeding failed:', err);
     process.exit(1);
   }
 })();

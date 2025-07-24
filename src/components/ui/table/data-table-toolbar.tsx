@@ -1,11 +1,7 @@
 'use client';
 
-import type { Column, Table } from '@tanstack/react-table';
 import * as React from 'react';
 
-import { DataTableDateFilter } from '@/components/ui/table/data-table-date-filter';
-import { DataTableFacetedFilter } from '@/components/ui/table/data-table-faceted-filter';
-import { DataTableSliderFilter } from '@/components/ui/table/data-table-slider-filter';
 import { DataTableViewOptions } from '@/components/ui/table/data-table-view-options';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,16 +9,16 @@ import { cn } from '@/lib/utils';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-interface DataTableToolbarProps<TData> extends React.ComponentProps<'div'> {
-  table: Table<TData>;
+interface DataTableToolbarProps extends React.ComponentProps<'div'> {
+  table: any; // Changed from Table<TData> to any as Column is removed
 }
 
-export function DataTableToolbar<TData>({
+export function DataTableToolbar({
   table,
   children,
   className,
   ...props
-}: DataTableToolbarProps<TData>) {
+}: DataTableToolbarProps) {
   const isFiltered = table.getState().columnFilters.length > 0;
   const onReset = React.useCallback(() => {
     table.resetColumnFilters();

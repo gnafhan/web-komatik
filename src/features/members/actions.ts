@@ -6,7 +6,7 @@ import { FieldValue } from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
 import { fileSchema, memberSchema } from './schema';
 
-function handleError(error: unknown, context: string) {
+function handleError() {
   const errorId = randomUUID();
   return {
     success: false,
@@ -73,7 +73,7 @@ export async function addMember(formData: FormData) {
     revalidatePath('/dashboard/members');
     return { success: true, message: 'Member added successfully.' };
   } catch (error) {
-    return handleError(error, 'addMember');
+    return handleError();
   }
 }
 
@@ -141,7 +141,7 @@ export async function updateMember(id: string, formData: FormData) {
     revalidatePath(`/dashboard/members/${id}`);
     return { success: true, message: 'Member updated successfully.' };
   } catch (error) {
-    return handleError(error, `updateMember with id: ${id}`);
+    return handleError();
   }
 }
 
@@ -176,6 +176,6 @@ export async function deleteMember(id: string) {
     revalidatePath('/dashboard/members');
     return { success: true, message: 'Member deleted successfully.' };
   } catch (error) {
-    return handleError(error, `deleteMember with id: ${id}`);
+    return handleError();
   }
 }
