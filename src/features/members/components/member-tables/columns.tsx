@@ -64,6 +64,26 @@ export const columns: ColumnDef<Member>[] = [
     size: 150
   },
   {
+    accessorKey: 'groupName',
+    header: 'GROUP NAME',
+    size: 150
+  },
+  {
+    accessorKey: 'period',
+    header: 'PERIOD',
+    size: 150
+  },
+  {
+    accessorKey: 'position',
+    header: 'POSITION',
+    size: 150
+  },
+  {
+    accessorKey: 'category',
+    header: 'CATEGORY',
+    size: 150
+  },
+  {
     accessorKey: 'bio',
     header: 'BIO',
     size: 250

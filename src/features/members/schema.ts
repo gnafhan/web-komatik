@@ -13,7 +13,11 @@ export const memberSchema = z.object({
   email: z.string().email('Please enter a valid email.'),
   phone: z.string().min(10, 'Phone number must be at least 10 characters.'),
   student_id: z.string().min(5, 'Student ID must be at least 5 characters.'),
-  bio: z.string().min(10, 'Bio must be at least 10 characters.')
+  bio: z.string().min(10, 'Bio must be at least 10 characters.'),
+  period: z.string().min(1, 'Period is required.'),
+  position: z.string().min(1, 'Position is required'),
+  category: z.enum(['ph', 'manajerial', 'teknis']),
+  groupName: z.string()
 });
 
 export const fileSchema = z

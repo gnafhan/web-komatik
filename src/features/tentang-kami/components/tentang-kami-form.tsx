@@ -28,7 +28,7 @@ interface TentangKamiFormProps {
 export default function TentangKamiForm({ initialData }: TentangKamiFormProps) {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
-
+  console.log(initialData);
   const form = useForm<TentangKamiFormValues>({
     resolver: zodResolver(tentangKamiSchema),
     defaultValues: {
@@ -56,7 +56,7 @@ export default function TentangKamiForm({ initialData }: TentangKamiFormProps) {
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: 'objectives'
+    name: 'objectives' as const
   });
 
   const addObjective = () => {

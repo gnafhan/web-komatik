@@ -28,6 +28,10 @@ export type Member = {
   phone: string;
   student_id: string;
   photo_url: string;
+  period: string;
+  position: string;
+  category: string;
+  groupName: string;
   bio: string;
   created_at: Timestamp;
   updated_at: Timestamp;
