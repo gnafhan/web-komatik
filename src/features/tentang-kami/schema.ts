@@ -16,7 +16,11 @@ export const tentangKamiSchema = z.object({
     .string()
     .min(10, 'Objectives description must be at least 10 characters.'),
   objectives: z
-    .array(z.string().min(1, 'Objective cannot be empty.'))
+    .array(
+      z.object({
+        value: z.string().min(1, 'Objective cannot be empty.')
+      })
+    )
     .min(1, 'At least one objective is required.'),
 
   video_title: z.string().min(1, 'Video title is required.'),

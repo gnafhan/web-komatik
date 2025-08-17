@@ -34,10 +34,22 @@ export async function getTentangKami() {
           objectives_description:
             'KOMATIK UGM memiliki beberapa tujuan yang menjadi dasar dari seluruh aktivitas dan program yang dijalankan, antara lain:',
           objectives: [
-            'Menjadi wadah berkumpul mahasiswa yang minat terhadap Teknologi Informasi dan Komunikasi',
-            'Mengembangkan kreativitas dan kemampuan mahasiswa dalam bidang Teknologi Informasi dan Komunikasi',
-            'Memotivasi mahasiswa untuk berperan dalam mengembangkan dunia Teknologi Informasi dan Komunikasi',
-            'Memberikan kontribusi terhadap UGM dalam bentuk riset dan pencapaian'
+            {
+              value:
+                'Menjadi wadah berkumpul mahasiswa yang minat terhadap Teknologi Informasi dan Komunikasi'
+            },
+            {
+              value:
+                'Mengembangkan kreativitas dan kemampuan mahasiswa dalam bidang Teknologi Informasi dan Komunikasi'
+            },
+            {
+              value:
+                'Memotivasi mahasiswa untuk berperan dalam mengembangkan dunia Teknologi Informasi dan Komunikasi'
+            },
+            {
+              value:
+                'Memberikan kontribusi terhadap UGM dalam bentuk riset dan pencapaian'
+            }
           ],
           video_title: 'Video Profile',
           video_url: 'https://www.youtube.com/embed/lelkP0nqxzc'
@@ -56,10 +68,10 @@ export async function getTentangKami() {
         data.objective_4)
     ) {
       const objectives = [];
-      if (data.objective_1) objectives.push(data.objective_1);
-      if (data.objective_2) objectives.push(data.objective_2);
-      if (data.objective_3) objectives.push(data.objective_3);
-      if (data.objective_4) objectives.push(data.objective_4);
+      if (data.objective_1) objectives.push({ value: data.objective_1 });
+      if (data.objective_2) objectives.push({ value: data.objective_2 });
+      if (data.objective_3) objectives.push({ value: data.objective_3 });
+      if (data.objective_4) objectives.push({ value: data.objective_4 });
 
       const {
         objective_1,
@@ -72,8 +84,15 @@ export async function getTentangKami() {
       Object.assign(data, cleanData);
     }
 
+    // Convert legacy objectives array format to new object format
     const serializedData = {
       ...data,
+      objectives:
+        data?.objectives && Array.isArray(data.objectives)
+          ? data.objectives.map((obj: any) =>
+              typeof obj === 'string' ? { value: obj } : obj
+            )
+          : data?.objectives,
       created_at: data?.created_at?.toDate?.()?.toISOString() || null,
       updated_at: data?.updated_at?.toDate?.()?.toISOString() || null
     };
@@ -91,12 +110,12 @@ export async function updateTentangKami(formData: FormData) {
   try {
     const rawData = Object.fromEntries(formData.entries());
 
-    const objectives: string[] = [];
+    const objectives: { value: string }[] = [];
     const processedData: any = {};
 
     for (const [key, value] of Object.entries(rawData)) {
       if (key.startsWith('objectives[') && key.endsWith(']')) {
-        objectives.push(value as string);
+        objectives.push({ value: value as string });
       } else {
         processedData[key] = value;
       }
