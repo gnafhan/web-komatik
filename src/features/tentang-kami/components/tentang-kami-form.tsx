@@ -28,7 +28,7 @@ interface TentangKamiFormProps {
 export default function TentangKamiForm({ initialData }: TentangKamiFormProps) {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
-  console.log(initialData);
+
   const form = useForm<TentangKamiFormValues>({
     resolver: zodResolver(tentangKamiSchema),
     defaultValues: {
@@ -43,10 +43,22 @@ export default function TentangKamiForm({ initialData }: TentangKamiFormProps) {
         initialData?.objectives_description ||
         'KOMATIK UGM memiliki beberapa tujuan yang menjadi dasar dari seluruh aktivitas dan program yang dijalankan, antara lain:',
       objectives: initialData?.objectives || [
-        'Menjadi wadah berkumpul mahasiswa yang minat terhadap Teknologi Informasi dan Komunikasi',
-        'Mengembangkan kreativitas dan kemampuan mahasiswa dalam bidang Teknologi Informasi dan Komunikasi',
-        'Memotivasi mahasiswa untuk berperan dalam mengembangkan dunia Teknologi Informasi dan Komunikasi',
-        'Memberikan kontribusi terhadap UGM dalam bentuk riset dan pencapaian'
+        {
+          value:
+            'Menjadi wadah berkumpul mahasiswa yang minat terhadap Teknologi Informasi dan Komunikasi'
+        },
+        {
+          value:
+            'Mengembangkan kreativitas dan kemampuan mahasiswa dalam bidang Teknologi Informasi dan Komunikasi'
+        },
+        {
+          value:
+            'Memotivasi mahasiswa untuk berperan dalam mengembangkan dunia Teknologi Informasi dan Komunikasi'
+        },
+        {
+          value:
+            'Memberikan kontribusi terhadap UGM dalam bentuk riset dan pencapaian'
+        }
       ],
       video_title: initialData?.video_title || 'Video Profile',
       video_url:
@@ -56,11 +68,11 @@ export default function TentangKamiForm({ initialData }: TentangKamiFormProps) {
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: 'objectives' as const
+    name: 'objectives'
   });
 
   const addObjective = () => {
-    append('');
+    append({ value: '' });
   };
 
   const removeObjective = (index: number) => {
@@ -81,7 +93,7 @@ export default function TentangKamiForm({ initialData }: TentangKamiFormProps) {
       });
 
       objectives.forEach((objective, index) => {
-        formData.append(`objectives[${index}]`, objective);
+        formData.append(`objectives[${index}]`, objective.value);
       });
 
       const result = await updateTentangKami(formData);
@@ -254,7 +266,7 @@ export default function TentangKamiForm({ initialData }: TentangKamiFormProps) {
                       <div className='flex-1'>
                         <FormField
                           control={form.control}
-                          name={`objectives.${index}`}
+                          name={`objectives.${index}.value`}
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className='sr-only'>

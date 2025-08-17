@@ -28,11 +28,12 @@ export type Member = {
   phone: string;
   student_id: string;
   photo_url: string;
+  photo_filename?: string;
+  bio: string;
   period: string;
   position: string;
-  category: string;
+  category: 'ph' | 'manajerial' | 'teknis';
   groupName: string;
-  bio: string;
   created_at: Timestamp;
   updated_at: Timestamp;
 };
