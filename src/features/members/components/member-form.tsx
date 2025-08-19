@@ -11,6 +11,13 @@ import {
   FormLabel,
   FormMessage
 } from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Member } from '@/types';
@@ -94,7 +101,12 @@ export default function MemberForm({
       phone: initialData?.phone || '',
       student_id: initialData?.student_id || '',
       bio: initialData?.bio || '',
-      photo_url: undefined
+      photo_url: undefined,
+      period: initialData?.period || '',
+      position: initialData?.position || '',
+      category:
+        (initialData?.category as 'ph' | 'manajerial' | 'teknis') || 'ph',
+      groupName: initialData?.groupName || ''
     },
     onSuccess: () => {
       router.push('/dashboard/members');
@@ -188,6 +200,67 @@ export default function MemberForm({
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name='period'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Periode</FormLabel>
+                    <FormControl>
+                      <Input placeholder='Enter period' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='groupName'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Group Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder='Enter group name' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='position'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Position</FormLabel>
+                    <FormControl>
+                      <Input placeholder='Enter position' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='category'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder='Select status' />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value='ph'>PH</SelectItem>
+                        <SelectItem value='manajerial'>Manajerial</SelectItem>
+                        <SelectItem value='teknis'>Teknis</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
             <FormField
               control={form.control}
@@ -218,6 +291,7 @@ export default function MemberForm({
           </form>
         </Form>
       </CardContent>
+        
     </Card>
   );
 }

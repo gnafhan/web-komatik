@@ -46,6 +46,20 @@ export const navItems: NavItem[] = [
     items: []
   },
   {
+    title: 'Page',
+    url: '#',
+    icon: 'page',
+    shortcut: ['t', 'k'],
+    isActive: false,
+    items: [
+      {
+        title: 'Tentang Kami',
+        url: '/dashboard/tentang-kami',
+        icon: 'page'
+      }
+    ]
+  },
+  {
     title: 'Periods',
     url: '/dashboard/periods',
     icon: 'product',
